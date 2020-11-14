@@ -1,0 +1,37 @@
+.amazon-subtitles {
+    position: fixed;
+    width: 100%;
+    height: 100px;
+    bottom: 15%;
+    color: white;
+}
+
+.amazon-subtitles-drop-files {
+    border: 2px dashed rgba(255, 255, 255, 0.7);
+    z-index: 999999999;
+    height: 3vw;
+    overflow: hidden;
+    position: relative;
+    font-size: 1vw;
+    text-align: center;
+    line-height: 2.9vw;
+    margin: 0px 5vw;
+}
+
+.amazon-subtitles-drop-file-input {
+    transform: scale(100);
+    opacity: 0;
+    position: absolute;
+}
+
+.amazon-subtitles-content {
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    margin-top: 6px;
+    font-size: 2vw;
+    background-color: transparent;
+    line-height: 1.3;
+    font-size: 2vv;
+}

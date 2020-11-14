@@ -1,0 +1,39 @@
+{
+    "manifest_version": 2,
+    "name": "Amazon Prime Video Subtitles",
+    "description": "Adding subtitles to Amazon Prime Video",
+    "version": "1.0",
+    "icons": {
+        "128": "assets/images/icon_128.png"
+    },
+
+    "content_scripts": [{
+        "matches": [
+            "*://*.amazon.ae/*",
+            "*://*.amazon.ca/*",
+            "*://*.amazon.cn/*",
+            "*://*.amazon.co.jp/*",
+            "*://*.amazon.co.uk/*",
+            "*://*.amazon.com/*",
+            "*://*.amazon.com.au/*",
+            "*://*.amazon.com.br/*",
+            "*://*.amazon.com.mx/*",
+            "*://*.amazon.com.tr/*",
+            "*://*.amazon.de/*",
+            "*://*.amazon.es/*",
+            "*://*.amazon.fr/*",
+            "*://*.amazon.in/*",
+            "*://*.amazon.it/*",
+            "*://*.amazon.nl/*",
+            "*://*.amazon.sa/*",
+            "*://*.amazon.se/*",
+            "*://*.amazon.sg/*"
+        ],
+        "js": ["assets/js/script.js"],
+        "css": ["assets/css/style.css"]
+    }],
+
+    "permissions": [
+        "tabs", "*/*"
+    ]
+}

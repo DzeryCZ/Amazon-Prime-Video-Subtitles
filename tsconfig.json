@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES2016",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "module": "commonjs",
+        "outDir": "./src/dist/"
+    },
+    "exclude": [
+        "node_modules",
+        "accets"
+    ]
+}
