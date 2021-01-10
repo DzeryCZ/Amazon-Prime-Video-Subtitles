@@ -1,11 +1,14 @@
-export class Utils {
-    static onReady(fn: Function, document: HTMLDocument): void {
-        if (/in/.test(document.readyState)) {
-            setTimeout(function() {
-                Utils.onReady(fn, document);
-            }, 100)
-        } else {
-            fn(document)
-        }
+export class Utils {    
+    static waitForElementExists(selector: string, callback: Function, attributes: Array<any>) {
+        (function loopSearch() {
+            if (document.querySelector(selector) != null) {
+                callback(...attributes);
+                return;
+            } else {
+            setTimeout(function () {
+                loopSearch();
+            }, 1000);
+            }
+        })();
     }
 }

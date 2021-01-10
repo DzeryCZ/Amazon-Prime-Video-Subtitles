@@ -1,4 +1,5 @@
 import { FileHandler } from './Handler/FileHandler'
+import { CloseHandler } from './Handler/CloseHandler'
 import { EventWithData } from './EventWithData'
 
 interface HTMLInputEvent extends Event {
@@ -6,8 +7,9 @@ interface HTMLInputEvent extends Event {
 }
 
 export class View {
-    static readonly WEB_PLAYER_ELEMENT_ID = 'dv-web-player'
+    static readonly WEB_PLAYER_ELEMENT_CLASS = 'scalingVideoContainer'
     static readonly SUBTITLES_CONTENT_ELEMENT_CLASS = 'amazon-subtitles-content'
+    static readonly AMAZON_SUBTITLES_CLASS = 'amazon-subtitles'
 
     private document: HTMLDocument;
 
@@ -17,7 +19,7 @@ export class View {
 
     public display(): void {
         const amazonSubtitlesElement = this.createSubtitlesElement();
-        const webPlayerElemet = this.document.getElementById(View.WEB_PLAYER_ELEMENT_ID);
+        const webPlayerElemet = this.document.getElementsByClassName(View.WEB_PLAYER_ELEMENT_CLASS)[0];
         webPlayerElemet.appendChild(amazonSubtitlesElement);
     }
 
@@ -26,7 +28,7 @@ export class View {
         const subtitlesContentElement = this.createSubtitlesContentEleent();
 
         const amazonSubtitlesElement = this.document.createElement("div");
-        amazonSubtitlesElement.className = 'amazon-subtitles'
+        amazonSubtitlesElement.className = View.AMAZON_SUBTITLES_CLASS
         amazonSubtitlesElement.appendChild(dropFilesElement)
         amazonSubtitlesElement.appendChild(subtitlesContentElement)
 
@@ -37,6 +39,9 @@ export class View {
         const dropFilesElement = this.document.createElement("div");
         dropFilesElement.className = 'amazon-subtitles-drop-files'
         dropFilesElement.innerHTML = 'Drag a *.srt File Here<br>';
+
+        const closeElement = this.createCloseElement();
+        dropFilesElement.appendChild(closeElement);
 
         const dropFileInputElement = this.document.createElement("input");
         dropFileInputElement.className = 'amazon-subtitles-drop-file-input'
@@ -49,9 +54,26 @@ export class View {
             this.document.dispatchEvent(dropFileEvent);
         });
 
-        dropFilesElement.appendChild(dropFileInputElement)
+        dropFilesElement.appendChild(dropFileInputElement);
 
         return dropFilesElement;
+    }
+
+    private createCloseElement(): HTMLDivElement {
+        const closeIconElement = this.document.createElement("span");
+        closeIconElement.className = 'amazon-subtitles-close-icon'
+        closeIconElement.innerHTML = '+';
+
+        const closeElement = this.document.createElement("div");
+        closeElement.className = 'amazon-subtitles-close'
+        closeElement.appendChild(closeIconElement)
+
+        closeElement.addEventListener('click', () => {
+            const closeEvent = new EventWithData(CloseHandler.EVENT_NAME);
+            this.document.dispatchEvent(closeEvent);
+        });
+
+        return closeElement;
     }
 
     private createSubtitlesContentEleent(): HTMLDivElement {

@@ -104,21 +104,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FileHandler_1 = __webpack_require__(1);
 const SrtParserHandler_1 = __webpack_require__(2);
 const PlaybackHandler_1 = __webpack_require__(4);
+const CloseHandler_1 = __webpack_require__(6);
 const View_1 = __webpack_require__(5);
-const Utils_1 = __webpack_require__(7);
-const RegisterHandlers_1 = __webpack_require__(8);
+const Utils_1 = __webpack_require__(8);
+const RegisterHandlers_1 = __webpack_require__(9);
 class AmazonPrimeSubtitles {
     onLoad(document) {
         const registerHandlers = new RegisterHandlers_1.RegisterHandlers(document);
         registerHandlers.registerHandler(FileHandler_1.FileHandler.EVENT_NAME, new FileHandler_1.FileHandler(document));
         registerHandlers.registerHandler(SrtParserHandler_1.SrtParserHandler.EVENT_NAME, new SrtParserHandler_1.SrtParserHandler(document));
         registerHandlers.registerHandler(PlaybackHandler_1.PlaybackHandler.EVENT_NAME, new PlaybackHandler_1.PlaybackHandler(document));
+        registerHandlers.registerHandler(CloseHandler_1.CloseHandler.EVENT_NAME, new CloseHandler_1.CloseHandler(document));
         const view = new View_1.View(document);
         view.display();
     }
 }
 const amazonPrimeSubtitles = new AmazonPrimeSubtitles();
-Utils_1.Utils.onReady(amazonPrimeSubtitles.onLoad, document);
+const webPlayerQuery = '.' + View_1.View.WEB_PLAYER_ELEMENT_CLASS;
+Utils_1.Utils.waitForElementExists(webPlayerQuery, amazonPrimeSubtitles.onLoad, [document]);
 
 
 /***/ }),
@@ -130,7 +133,7 @@ Utils_1.Utils.onReady(amazonPrimeSubtitles.onLoad, document);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileHandler = void 0;
 const SrtParserHandler_1 = __webpack_require__(2);
-const EventWithData_1 = __webpack_require__(6);
+const EventWithData_1 = __webpack_require__(7);
 class FileHandler {
     constructor(document) {
         this.document = document;
@@ -160,7 +163,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SrtParserHandler = void 0;
 const OneSubtitle_1 = __webpack_require__(3);
 const PlaybackHandler_1 = __webpack_require__(4);
-const EventWithData_1 = __webpack_require__(6);
+const EventWithData_1 = __webpack_require__(7);
 class SrtParserHandler {
     constructor(document) {
         this.SECONDS_IN_HOUR = 3600;
@@ -278,21 +281,22 @@ PlaybackHandler.SHOW_INTERVAL = 200;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.View = void 0;
 const FileHandler_1 = __webpack_require__(1);
-const EventWithData_1 = __webpack_require__(6);
+const CloseHandler_1 = __webpack_require__(6);
+const EventWithData_1 = __webpack_require__(7);
 class View {
     constructor(document) {
         this.document = document;
     }
     display() {
         const amazonSubtitlesElement = this.createSubtitlesElement();
-        const webPlayerElemet = this.document.getElementById(View.WEB_PLAYER_ELEMENT_ID);
+        const webPlayerElemet = this.document.getElementsByClassName(View.WEB_PLAYER_ELEMENT_CLASS)[0];
         webPlayerElemet.appendChild(amazonSubtitlesElement);
     }
     createSubtitlesElement() {
         const dropFilesElement = this.createDropFilesElement();
         const subtitlesContentElement = this.createSubtitlesContentEleent();
         const amazonSubtitlesElement = this.document.createElement("div");
-        amazonSubtitlesElement.className = 'amazon-subtitles';
+        amazonSubtitlesElement.className = View.AMAZON_SUBTITLES_CLASS;
         amazonSubtitlesElement.appendChild(dropFilesElement);
         amazonSubtitlesElement.appendChild(subtitlesContentElement);
         return amazonSubtitlesElement;
@@ -301,6 +305,8 @@ class View {
         const dropFilesElement = this.document.createElement("div");
         dropFilesElement.className = 'amazon-subtitles-drop-files';
         dropFilesElement.innerHTML = 'Drag a *.srt File Here<br>';
+        const closeElement = this.createCloseElement();
+        dropFilesElement.appendChild(closeElement);
         const dropFileInputElement = this.document.createElement("input");
         dropFileInputElement.className = 'amazon-subtitles-drop-file-input';
         dropFileInputElement.type = 'file';
@@ -313,6 +319,19 @@ class View {
         dropFilesElement.appendChild(dropFileInputElement);
         return dropFilesElement;
     }
+    createCloseElement() {
+        const closeIconElement = this.document.createElement("span");
+        closeIconElement.className = 'amazon-subtitles-close-icon';
+        closeIconElement.innerHTML = '+';
+        const closeElement = this.document.createElement("div");
+        closeElement.className = 'amazon-subtitles-close';
+        closeElement.appendChild(closeIconElement);
+        closeElement.addEventListener('click', () => {
+            const closeEvent = new EventWithData_1.EventWithData(CloseHandler_1.CloseHandler.EVENT_NAME);
+            this.document.dispatchEvent(closeEvent);
+        });
+        return closeElement;
+    }
     createSubtitlesContentEleent() {
         const subtitlesContentElement = this.document.createElement("div");
         subtitlesContentElement.className = View.SUBTITLES_CONTENT_ELEMENT_CLASS;
@@ -320,12 +339,35 @@ class View {
     }
 }
 exports.View = View;
-View.WEB_PLAYER_ELEMENT_ID = 'dv-web-player';
+View.WEB_PLAYER_ELEMENT_CLASS = 'scalingVideoContainer';
 View.SUBTITLES_CONTENT_ELEMENT_CLASS = 'amazon-subtitles-content';
+View.AMAZON_SUBTITLES_CLASS = 'amazon-subtitles';
 
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CloseHandler = void 0;
+const View_1 = __webpack_require__(5);
+class CloseHandler {
+    constructor(document) {
+        this.document = document;
+    }
+    handle(event) {
+        const subtitlesContetnElement = this.document.getElementsByClassName(View_1.View.AMAZON_SUBTITLES_CLASS)[0];
+        subtitlesContetnElement.remove();
+    }
+}
+exports.CloseHandler = CloseHandler;
+CloseHandler.EVENT_NAME = 'amazonPrimeSubtitlesClose';
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -338,7 +380,7 @@ exports.EventWithData = EventWithData;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -356,12 +398,25 @@ class Utils {
             fn(document);
         }
     }
+    static waitForElementExists(selector, callback, attributes) {
+        (function loopSearch() {
+            if (document.querySelector(selector) != null) {
+                callback(...attributes);
+                return;
+            }
+            else {
+                setTimeout(function () {
+                    loopSearch();
+                }, 1000);
+            }
+        })();
+    }
 }
 exports.Utils = Utils;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

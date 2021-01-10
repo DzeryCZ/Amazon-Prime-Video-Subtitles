@@ -13,7 +13,7 @@ The Chrome extension can be installed from [Chrome Web Store](https://chrome.goo
 npm install
 
 # Build JS
-webpack
+./node_modules/.bin/webpack
 ```
 
 ## Deploy a new version
